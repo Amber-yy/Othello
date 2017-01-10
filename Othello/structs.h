@@ -1,6 +1,7 @@
 #pragma once
 
 #define BOARDSIZE 8
+#define FPS 120
 
 enum BlockType
 {
@@ -14,6 +15,13 @@ enum OpType
 	move,
 	restart,
 	regret
+};
+
+struct counter
+{
+	int total;
+	int black;
+	int white;
 };
 
 struct Point

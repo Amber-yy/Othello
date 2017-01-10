@@ -1,6 +1,7 @@
 #include "structs.h"
 
 #include <string.h>
+#include "functions.h"
 
 struct moveStruct
 {
@@ -273,7 +274,7 @@ static bool canMoveToLeftDown(BlockType(*board)[BOARDSIZE], moveStruct moveInfo)
 			{
 				if (moveInfo.autoFill)
 				{
-					for (int tx = moveInfo.x - 1, ty = moveInfo.y + 1; tx<x&&ty<y; tx--, ty++)
+					for (int tx = moveInfo.x - 1, ty = moveInfo.y + 1; tx>x&&ty<y; tx--, ty++)
 					{
 						board[tx][ty] = moveInfo.currentType;
 					}
@@ -313,7 +314,7 @@ static bool canMoveToRightUp(BlockType(*board)[BOARDSIZE], moveStruct moveInfo)
 			{
 				if (moveInfo.autoFill)
 				{
-					for (int tx = moveInfo.x + 1, ty = moveInfo.y - 1; tx<x&&ty<y; tx++, ty--)
+					for (int tx = moveInfo.x + 1, ty = moveInfo.y - 1; tx<x&&ty>y; tx++, ty--)
 					{
 						board[tx][ty] = moveInfo.currentType;
 					}
@@ -335,6 +336,14 @@ bool canMove(GameControl *game,Point *point)
 {
 	BlockType currentType=game->currentPlayer;
 	BlockType enemyType;
+	if (currentType == black)
+	{
+		enemyType = white;
+	}
+	else
+	{
+		enemyType = black;
+	}
 	BlockType (*board)[BOARDSIZE] = game->board[game->currentStep].board;
 
 	moveStruct moveInfo;
@@ -414,6 +423,14 @@ bool movePiece(GameControl *game, Point *point)
 {
 	BlockType currentType = game->currentPlayer;
 	BlockType enemyType;
+	if (currentType == black)
+	{
+		enemyType = white;
+	}
+	else
+	{
+		enemyType = black;
+	}
 	BlockType(*prevBoard)[BOARDSIZE] = game->board[game->currentStep].board;
 	BlockType(*board)[BOARDSIZE] = game->board[game->currentStep+1].board;
 	
@@ -443,6 +460,8 @@ bool movePiece(GameControl *game, Point *point)
 
 	game->lastPoint = *point;
 	game->currentPlayer = enemyType;
+
+	board[point->x][point->y] = currentType;
 
 	if (game->currentStep == BOARDSIZE*BOARDSIZE)
 	{
@@ -480,4 +499,49 @@ bool movePiece(GameControl *game, Point *point)
 	}
 
 	return false;
+}
+
+void iniBoard(GameControl *game)
+{
+	BlockType(*board)[BOARDSIZE];
+
+	for (int i = 0; i < 4; i++)
+	{
+		board = game->board[i].board;
+		memset(board,blank,BOARDSIZE*BOARDSIZE*sizeof(BlockType));
+		board[3][3] = board[4][4] = white;
+		board[4][3] = board[3][4] =black;
+	}
+
+	game->currentStep = 3;
+	game->currentPlayer = black;
+	game->lastPoint.x = 3;
+	game->lastPoint.y = 3;
+}
+
+counter count(GameControl * game)
+{
+	BlockType(*board)[BOARDSIZE] = game->board[game->currentStep].board;
+	counter c;
+	c.black = 0;
+	c.white = 0;
+
+	for (int x = 0; x < BOARDSIZE; x++)
+	{
+		for (int y = 0; y < BOARDSIZE; y++)
+		{
+			if (board[x][y] == black)
+			{
+				c.black++;
+			}
+			else if (board[x][y] == white)
+			{
+				c.white++;
+			}
+		}
+	}
+
+	c.total = c.black + c.white;
+
+	return c;
 }
