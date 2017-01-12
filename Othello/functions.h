@@ -15,3 +15,6 @@ counter count(GameControl *game);
 /*这些函数实现在render.cpp中*/
 void gaming();
 operation getOperation(PaintStruct *painter);
+
+/*这些函数实现在ai.cpp中*/
+operation getAIOperarion(PaintStruct *painter);

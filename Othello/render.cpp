@@ -3,21 +3,6 @@
 #include <graphics.h>
 #include <string>
 
-struct PaintStruct
-{
-	Point normalQuit;
-	Point hoverQuit;
-	Point normalRegret;
-	Point hoverRegret;
-	Point promptGeo;
-	std::string quit;
-	std::string regret;
-	std::string history;
-	std::string prompt;
-	GameControl game;
-	PIMAGE originCanvas;
-};
-
 static PIMAGE iniInterface()
 {
 	initgraph(900, 640);
@@ -127,7 +112,7 @@ static void iniData(PaintStruct *painter)
 	painter->regret = "悔棋";
 	painter->prompt = "当前玩家：黑方";
 
-	painter->history = "游戏开始\n轮到黑方走子\n黑方有2颗棋子\n白方有2颗棋子";
+	painter->history = "游戏开始\n轮到黑方走子\n黑方有2颗棋子\n白方有2颗棋子\n总共有4颗棋子";
 	iniBoard(&painter->game);
 
 	setfont(20, 0, "楷体");
@@ -223,9 +208,28 @@ void gaming()
 	int deltaNum;
 	bool isGameOver = false;
 
+	operation s;
+
 	for(;;delay_fps(FPS))
 	{
-		operation s=getOperation(&painter);
+		if (isGameOver)
+		{
+			lastPlayer = black;
+			Sleep(100000);
+		}
+
+		if (lastPlayer == black)
+		{
+			//s = getOperation(&painter);
+			s = getAIOperarion(&painter);
+			Sleep(500);
+		}
+		else
+		{
+			s = getAIOperarion(&painter);
+			Sleep(500);
+		}
+
 		if (s.op == move)
 		{
 			if (canMove(&painter.game, &s.point))
@@ -239,7 +243,7 @@ void gaming()
 					{
 						sprintf(buffer, "对局结束，黑方获胜\n黑方有%d颗棋子\n白方有%d颗棋子\n",c.black,c.white);
 					}
-					else if (c.black > c.white)
+					else if (c.black < c.white)
 					{
 						sprintf(buffer, "对局结束，白方获胜\n黑方有%d颗棋子\n白方有%d颗棋子\n", c.black, c.white);
 					}
@@ -247,6 +251,7 @@ void gaming()
 					{
 						sprintf(buffer, "对局结束，平局\n黑方有%d颗棋子\n白方有%d颗棋子\n", c.black, c.white);
 					}
+					painter.history = buffer;
 				}
 				else
 				{
@@ -264,8 +269,20 @@ void gaming()
 					sprintf(buffer, "%c%d\n", painter.game.lastPoint.x + 'A', painter.game.lastPoint.y + 1);
 					painter.history += buffer;
 
-					
+					if (c.black > blackNum)
+					{
+						deltaNum = whiteNum - c.white;
+					}
+					else
+					{
+						deltaNum = blackNum - c.black;
+					}
 
+					blackNum = c.black;
+					whiteNum = c.white;
+
+					sprintf(buffer,"吃掉了对手%d颗棋子\n黑方有%d颗棋子\n白方有%d颗棋子\n总共有%d颗棋子\n",deltaNum,c.black,c.white,c.total);
+					painter.history += buffer;
 
 					if (painter.game.currentPlayer== black)
 					{

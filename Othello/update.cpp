@@ -434,9 +434,6 @@ bool movePiece(GameControl *game, Point *point)
 	BlockType(*prevBoard)[BOARDSIZE] = game->board[game->currentStep].board;
 	BlockType(*board)[BOARDSIZE] = game->board[game->currentStep+1].board;
 	
-	/*步数+1*/
-	game->currentStep++;
-
 	/*复制当前棋局到新的棋盘*/
 	memcpy(board, prevBoard, BOARDSIZE*BOARDSIZE * sizeof(BlockType));
 	game->board[game->currentStep + 1].lastPlayer=currentType;
@@ -463,7 +460,9 @@ bool movePiece(GameControl *game, Point *point)
 
 	board[point->x][point->y] = currentType;
 
-	if (game->currentStep == BOARDSIZE*BOARDSIZE)
+	/*步数+1*/
+	game->currentStep++;
+	if (game->currentStep == BOARDSIZE*BOARDSIZE-1)
 	{
 		return false;
 	}

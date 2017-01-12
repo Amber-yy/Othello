@@ -1,7 +1,10 @@
 #pragma once
 
+#include <string>
+#include <graphics.h>
+
 #define BOARDSIZE 8
-#define FPS 120
+#define FPS 240
 
 enum BlockType
 {
@@ -54,4 +57,19 @@ struct GameControl
 	BlockType currentPlayer;
 	/*用于记录棋局，提供记录棋谱、悔棋等功能，黑白棋最多走64步（实际上是60步）*/
 	Board board[BOARDSIZE*BOARDSIZE];
+};
+
+struct PaintStruct
+{
+	Point normalQuit;
+	Point hoverQuit;
+	Point normalRegret;
+	Point hoverRegret;
+	Point promptGeo;
+	std::string quit;
+	std::string regret;
+	std::string history;
+	std::string prompt;
+	GameControl game;
+	PIMAGE originCanvas;
 };
