@@ -209,20 +209,16 @@ void gaming()
 	bool isGameOver = false;
 
 	operation s;
-
 	for(;;delay_fps(FPS))
 	{
 		if (isGameOver)
 		{
 			lastPlayer = black;
-			Sleep(100000);
 		}
 
 		if (lastPlayer == black)
 		{
-			//s = getOperation(&painter);
-			s = getAIOperarion(&painter);
-			Sleep(500);
+			s = getOperation(&painter);
 		}
 		else
 		{
@@ -312,15 +308,38 @@ void gaming()
 		}
 		else if (s.op == regret)
 		{
-			OutputDebugStringA("regret\n");
+
+			if (painter.game.currentStep > 3)
+			{
+				for (int i = painter.game.currentStep-1; i >= 3; i--)
+				{
+					if (painter.game.board[i].lastPlayer != painter.game.currentPlayer)
+					{
+						painter.game.currentStep = i;
+						if (painter.game.currentPlayer == black)
+						{
+							painter.history = "黑方选择了悔棋";
+						}
+						else
+						{
+							painter.history = "白方选择了悔棋";
+						}
+						repaint(&painter, false, false);
+						break;
+					}
+				}
+			}
+
 		}
 		else if (s.op == restart)
 		{
+			painter.prompt = "当前玩家：黑方";
+			painter.history = "游戏开始\n轮到黑方走子\n黑方有2颗棋子\n白方有2颗棋子\n总共有4颗棋子";
 			iniBoard(&painter.game);
+			isGameOver = false;
 			lastPlayer = black;
 			blackNum = 2;
 			whiteNum = 2;
-			iniData(&painter);
 		}
 	}
 
